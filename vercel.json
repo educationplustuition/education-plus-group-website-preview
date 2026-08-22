@@ -1,4 +1,10 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "trailingSlash": false,
+  "rewrites": [
+    { "source": "/", "destination": "/v47.html" },
+    { "source": "/tuition", "destination": "/v47.html" },
+    { "source": "/tuition/11", "destination": "/v47.html" },
+    { "source": "/legacy", "destination": "/index.html" }
+  ]
 }
