@@ -1,4 +1,6 @@
 {
   "cleanUrls": true,
-  "trailingSlash": false
+  "rewrites": [
+    { "source": "/((?!asset-|app-v47\\.js|style-v47\\.css).*)", "destination": "/index-v47.html" }
+  ]
 }
