@@ -5,7 +5,6 @@
     { "source": "/", "destination": "/v47.html" },
     { "source": "/tuition", "destination": "/v47.html" },
     { "source": "/tuition/11", "destination": "/tuition-11-v48.html" },
-    { "source": "/tuition/11/assessments", "destination": "/tuition-11-assessments-v49.html" },
     { "source": "/legacy", "destination": "/index.html" }
   ]
 }
