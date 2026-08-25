@@ -1,0 +1,31 @@
+name: Package approved v47 self-contained
+on:
+  push:
+    branches:
+      - v54-approved-html-recovery
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify approved shell
+        run: |
+          test -s index.html
+          test $(wc -c < index.html) -gt 5000000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: approved-v47-selfcontained
+          path: |
+            index.html
+            index-v47.html
+            app-v47.js
+            style-v47.css
+            asset-01.js
+            asset-02.js
+            asset-03.js
+            asset-04.js
+            asset-group-sprite.js
+          if-no-files-found: error
