@@ -1,0 +1,26 @@
+name: Package v53 HTML snapshot
+on:
+  push:
+    branches:
+      - v53-approved-shell-recovery
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build package
+        run: |
+          mkdir -p package
+          cp index.html index-v47.html style-v47.css v53-overrides.css app-v53.js package/
+          cp asset-*.js package/
+          cp -R tuition package/tuition
+          cp tuition-11-v48.html tuition-11-assessments-v49.html package/
+          printf '%s\n' 'Education Plus v53 approved-shell repository snapshot' > package/README.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: education-plus-v53-shell
+          path: package
+          if-no-files-found: error
