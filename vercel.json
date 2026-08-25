@@ -1,6 +1,8 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/((?!asset-|app-v47\\.js|style-v47\\.css).*)", "destination": "/index-v47.html" }
+    { "source": "/tuition/11", "destination": "/tuition/11/index.html" },
+    { "source": "/tuition/11/assessments", "destination": "/tuition/11/assessments/index.html" },
+    { "source": "/((?!asset-|app-v53\\.js|app-v47\\.js|style-v47\\.css|v53-overrides\\.css|tuition/11).*)", "destination": "/index-v47.html" }
   ]
 }
