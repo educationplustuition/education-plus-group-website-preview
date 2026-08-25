@@ -1,0 +1,154 @@
+/* Education Plus v53 — approved-shell recovery
+   IMPORTANT: this file intentionally changes only the Education Plus Tuition
+   service-card area. The approved v47 Group/Tuition shell remains untouched. */
+
+.services-wrap{max-width:1260px;padding:18px 22px 34px}
+.service-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:18px}
+.service-card{
+  position:relative;
+  height:auto;
+  min-height:0;
+  aspect-ratio:3/4;
+  background:#fff;
+  border:2px solid #0b2d66;
+  border-radius:20px;
+  overflow:hidden;
+  box-shadow:0 10px 26px rgba(10,27,51,.10);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  padding:0 18px 22px;
+  transition:transform .16s ease,box-shadow .16s ease;
+}
+.service-card::before{
+  content:"";
+  position:absolute;
+  inset:0 0 auto;
+  height:9.5%;
+  min-height:26px;
+  background:linear-gradient(180deg,#e5ad09 0%,#d39b00 100%);
+  z-index:0;
+}
+.service-card::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  right:auto;
+  bottom:2.5%;
+  transform:translateX(-50%);
+  width:64%;
+  height:25%;
+  background-image:var(--motif);
+  background-position:center bottom;
+  background-size:contain;
+  background-repeat:no-repeat;
+  opacity:.065;
+  filter:none;
+  pointer-events:none;
+  z-index:0;
+}
+.service-card:hover,.service-card:focus-within{transform:translateY(-2px);box-shadow:0 14px 34px rgba(10,27,51,.15)}
+.service-card.active{border-color:#0b2d66;box-shadow:0 10px 26px rgba(10,27,51,.10)}
+.service-card.active::before{height:9.5%;background:linear-gradient(180deg,#e5ad09 0%,#d39b00 100%)}
+.service-title{
+  position:relative;
+  z-index:2;
+  flex:0 0 auto;
+  min-height:0;
+  display:block;
+  margin:15% 0 4%;
+  color:#0b2d66;
+  font:700 clamp(20px,2vw,29px)/.95 "Cormorant Garamond",Georgia,serif;
+  letter-spacing:.015em;
+  text-align:center;
+  text-transform:uppercase;
+}
+.service-roundel{
+  position:relative;
+  z-index:2;
+  flex:0 0 auto;
+  width:43%;
+  height:auto;
+  aspect-ratio:1;
+  max-width:142px;
+  border-radius:50%;
+  object-fit:cover;
+  mix-blend-mode:normal;
+  box-shadow:none;
+  margin:1% 0 5%;
+}
+.service-card.active .service-roundel{box-shadow:none}
+.service-desc{
+  position:relative;
+  z-index:2;
+  width:100%;
+  max-width:270px;
+  margin:0 auto;
+  color:#17345f;
+  text-align:center;
+  font:600 clamp(13px,1.15vw,17px)/1.18 "Cormorant Garamond",Georgia,serif;
+}
+.service-desc::before{
+  content:"◆";
+  display:block;
+  width:70%;
+  margin:0 auto 8%;
+  overflow:hidden;
+  color:#d79e00;
+  font:700 10px/1 "Source Sans 3",Arial,sans-serif;
+  letter-spacing:0;
+  background:linear-gradient(#d79e00,#d79e00) left center/42% 1px no-repeat,
+             linear-gradient(#d79e00,#d79e00) right center/42% 1px no-repeat;
+}
+.service-action,.service-action.disabled{
+  position:relative;
+  z-index:2;
+  flex:0 0 auto;
+  width:62%;
+  min-width:0;
+  max-width:190px;
+  height:auto;
+  min-height:44px;
+  margin-top:auto;
+  margin-bottom:15%;
+  border:0;
+  border-radius:10px;
+  background:#062d68;
+  color:#fff;
+  cursor:pointer;
+  box-shadow:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  font:700 clamp(13px,1.1vw,17px)/1 "Cormorant Garamond",Georgia,serif;
+  letter-spacing:.09em;
+}
+.service-action:hover,.service-action:focus-visible{background:#0a3779;outline:3px solid rgba(201,154,46,.32);outline-offset:2px}
+.service-action .card-arrow{color:#e0a300;font:700 24px/1 Georgia,serif;letter-spacing:0}
+
+@media (max-width:1000px){
+  .service-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+  .service-title{font-size:23px}
+  .service-desc{font-size:14.5px}
+}
+@media (max-width:680px){
+  .services-wrap{padding:12px 9px 24px}
+  .service-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+  .service-card{border-radius:14px;padding:0 9px 12px;border-width:1.7px}
+  .service-card::before,.service-card.active::before{min-height:17px}
+  .service-title{margin-top:16%;margin-bottom:3%;font-size:clamp(15px,4.2vw,19px);line-height:.94}
+  .service-roundel{width:45%;margin:1% 0 5%}
+  .service-desc{font-size:clamp(10.5px,2.8vw,13px);line-height:1.14}
+  .service-desc::before{margin-bottom:7%;font-size:7px}
+  .service-action,.service-action.disabled{width:65%;min-height:32px;margin-bottom:13%;border-radius:7px;font-size:clamp(10px,2.7vw,12px);gap:8px}
+  .service-action .card-arrow{font-size:18px}
+}
+@media (max-width:370px){
+  .service-grid{grid-template-columns:1fr;gap:12px}
+  .service-card{width:min(310px,92vw);margin:0 auto}
+  .service-title{font-size:23px}
+  .service-desc{font-size:15px}
+  .service-action,.service-action.disabled{min-height:42px;font-size:15px}
+}
