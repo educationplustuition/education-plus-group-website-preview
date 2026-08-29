@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0A1B33">
+<title>Education Plus Group — Smart Rebuild v2</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#F5F7FA}#site{display:block;width:100%;height:100%;border:0;background:#F5F7FA}
+#load{position:fixed;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;background:#0A1B33;color:#fff;font:700 14px Arial,sans-serif;letter-spacing:.04em}#load span{color:#C99A2E;margin-left:5px}
+</style>
+</head>
+<body>
+<div id="load">Loading Education Plus<span>+</span></div>
+<iframe id="site" title="Education Plus Smart Website v2" src="./education-plus-smart-v1.html"></iframe>
+<script>
+(()=>{
+const frame=document.getElementById('site'),loader=document.getElementById('load');
+const NAVY='#0A1B33',ROYAL='#153E8C',GOLD='#C99A2E';
+const teams={digital:'Digital',home:'Homeschool',homeschool:'Homeschool',supply:'Supply Staff',catholic:'Catholic Supply Staff',international:'International Tuition',tuition:'Tuition'};
+const titles={digital:'Education Plus Digital',home:'Education Plus Homeschool',homeschool:'Education Plus Homeschool',supply:'Education Plus Supply',catholic:'Education Plus Catholic Supply',international:'Education Plus International Tuition',tuition:'Education Plus Tuition'};
+function keyOf(el){const card=el.closest('[data-div],[data-division]');return card?.dataset.div||card?.dataset.division||''}
+function text(el){return (el?.textContent||'').replace(/[←→]/g,'').trim()}
+function inject(){
+ const w=frame.contentWindow,d=w.document;if(!d||d.__epV2)return;d.__epV2=true;
+ const style=d.createElement('style');style.textContent=`
+ html{scroll-behavior:auto!important}body{overflow-x:hidden!important}
+ .grid6,.division-grid{align-items:stretch!important}
+ .division,.division-card{min-height:300px!important;padding-top:16px!important;display:flex!important;flex-direction:column!important;align-items:center!important;text-align:center!important}
+ .division .round,.division-roundel{width:74px!important;height:74px!important;min-width:74px!important;min-height:74px!important;max-width:74px!important;max-height:74px!important;object-fit:contain!important;margin:2px auto 6px!important;flex:0 0 74px!important}
+ .division .word,.division-wordmark{width:220px!important;height:50px!important;max-width:88%!important;min-height:50px!important;max-height:50px!important;object-fit:contain!important;object-position:center!important;margin:0 auto!important;flex:0 0 50px!important}
+ .division h3,.division-card h3{font-size:20px!important;line-height:1!important;font-weight:700!important;min-height:42px!important;margin:5px 0!important;display:flex!important;align-items:center!important;justify-content:center!important;width:100%!important}
+ .division p,.division-card p{font-size:10px!important;line-height:1.35!important;min-height:44px!important;max-width:275px!important;margin:0 auto 12px!important;display:flex!important;align-items:flex-start!important;justify-content:center!important}
+ .division .go,.card-action{margin-top:auto!important;min-height:31px!important;align-items:center!important}
+ .subIn,.subhero-inner{grid-template-columns:92px 1fr!important;gap:20px!important;min-height:184px!important}
+ .subIn>.round,.subhero-roundel{width:88px!important;height:88px!important;max-width:88px!important;max-height:88px!important;object-fit:contain!important;margin:auto!important}
+ .subhero h1,.subhero-copy h1{font-size:clamp(33px,4vw,43px)!important;line-height:.98!important}
+ .epv2-advice{margin:10px auto 0;max-width:760px;padding:10px 12px;background:linear-gradient(90deg,#F5F8FC,#FFF9EB);border-left:4px solid ${GOLD};border-radius:10px;color:#5D6C7D;font:600 10px/1.4 Arial,sans-serif;text-align:left}.epv2-advice b{color:${ROYAL}}
+ .epv2-feedback{position:fixed;top:68px;left:50%;z-index:2147483000;transform:translate(-50%,-14px);opacity:0;pointer-events:none;width:min(520px,calc(100% - 24px));background:rgba(10,27,51,.98);border:1px solid rgba(201,154,46,.75);border-radius:12px;padding:10px 13px;color:white;text-align:center;font:700 10px/1.3 Arial,sans-serif;box-shadow:0 16px 42px rgba(10,27,51,.25);transition:.14s ease}.epv2-feedback.on{opacity:1;transform:translate(-50%,0)}
+ .epv2-page{position:fixed;inset:0;z-index:2147483001;background:#F5F7FA;overflow:auto;color:${NAVY};font-family:Arial,sans-serif}.epv2-head{background:${NAVY};border-bottom:4px solid ${GOLD};min-height:220px;display:flex;align-items:center}.epv2-headin{width:min(900px,calc(100% - 28px));margin:auto;display:grid;grid-template-columns:92px 1fr;gap:20px;align-items:center;padding:26px 0}.epv2-head img{width:88px;height:88px;object-fit:contain}.epv2-kicker{color:#E7C66E;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase}.epv2-head h1{font-family:Georgia,serif;color:white;font-size:clamp(34px,5vw,48px);line-height:.98;margin:7px 0 8px}.epv2-head p{color:#DCE6F1;font-size:12px;line-height:1.45;margin:0}.epv2-body{width:min(850px,calc(100% - 28px));margin:22px auto 40px;background:white;border:1px solid #D8E1EB;border-radius:18px;padding:24px;text-align:center;box-shadow:0 18px 48px rgba(10,27,51,.1)}.epv2-status{display:inline-flex;border:1px solid rgba(201,154,46,.55);background:#FFF8E7;border-radius:999px;padding:6px 10px;font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase}.epv2-body h2{font-family:Georgia,serif;color:${ROYAL};font-size:34px;line-height:1;margin:10px 0 8px}.epv2-body p{max-width:650px;margin:0 auto 16px;color:#5D6C7D;font-size:12px;line-height:1.5}.epv2-actions{display:flex;justify-content:center;gap:8px;flex-wrap:wrap}.epv2-actions button{border:0;border-radius:10px;padding:10px 13px;font-size:10px;font-weight:800}.epv2-primary{background:${GOLD};color:${NAVY}}.epv2-secondary{background:#EEF3F8;color:${ROYAL}}
+ @media(max-width:600px){.division,.division-card{min-height:258px!important}.division .round,.division-roundel{width:60px!important;height:60px!important;min-width:60px!important;min-height:60px!important;max-width:60px!important;max-height:60px!important;flex-basis:60px!important}.division .word,.division-wordmark{width:175px!important;height:43px!important;min-height:43px!important;max-height:43px!important;flex-basis:43px!important}.division h3,.division-card h3{font-size:16px!important;min-height:36px!important}.division p,.division-card p{font-size:8px!important;min-height:42px!important}.subIn,.subhero-inner{grid-template-columns:66px 1fr!important;gap:10px!important}.subIn>.round,.subhero-roundel{width:62px!important;height:62px!important;max-width:62px!important;max-height:62px!important}.epv2-headin{grid-template-columns:66px 1fr;gap:11px}.epv2-head img{width:62px;height:62px}.epv2-head{min-height:178px}.epv2-body{padding:18px 14px}}
+ `;d.head.appendChild(style);
+ const feedback=d.createElement('div');feedback.className='epv2-feedback';feedback.setAttribute('role','status');feedback.setAttribute('aria-live','polite');d.body.appendChild(feedback);
+ let ft;function say(m){feedback.textContent=m;feedback.classList.add('on');clearTimeout(ft);ft=setTimeout(()=>feedback.classList.remove('on'),950)}
+ function top(){w.scrollTo(0,0);d.documentElement.scrollTop=0;d.body.scrollTop=0}
+ function nav(hash,label){say('Opening '+label);w.location.hash=hash;top();setTimeout(top,0)}
+ function contact(team,msg){say('Opening '+team+' enquiry');w.location.hash='#contact';top();setTimeout(()=>{top();const sel=d.querySelector('#team');if(sel){sel.value=team;sel.dispatchEvent(new Event('change',{bubbles:true}))}const ta=d.querySelector('#message');if(ta&&!ta.value)ta.value=msg||('I would like more information about '+team+'.')},0)}
+ function roundelFor(area){const map={tuition:'https://education-plus-group.htmlhost.co/assets/embedded/005_80ec6de28085.webp',digital:'https://education-plus-group.htmlhost.co/assets/embedded/039_5c8049dcb50d.png',home:'https://education-plus-group.htmlhost.co/assets/embedded/042_5c0bd0ac01cc.png',homeschool:'https://education-plus-group.htmlhost.co/assets/embedded/042_5c0bd0ac01cc.png',supply:'https://education-plus-group.htmlhost.co/assets/embedded/044_8a7d4867cec3.png',catholic:'https://education-plus-group.htmlhost.co/assets/embedded/046_012f586c9984.png',international:'https://education-plus-group.htmlhost.co/assets/embedded/048_e76386b880be.png'};return map[area]||map.tuition}
+ function coming(title,team='Tuition',area='tuition',copy='This Education Plus page is currently being developed.'){
+  say(title+' opened');const old=d.querySelector('.epv2-page');if(old)old.remove();const page=d.createElement('section');page.className='epv2-page';page.innerHTML=`<div class="epv2-head"><div class="epv2-headin"><img src="${roundelFor(area)}" alt=""><div><div class="epv2-kicker">${titles[area]||'Education Plus'}</div><h1>${title}</h1><p>${copy}</p></div></div></div><div class="epv2-body"><span class="epv2-status">Page in development</span><h2>${title}</h2><p>You have reached the correct Education Plus route. The full page is still under construction, so this clear development state appears immediately rather than leaving a dead click or making you search elsewhere on the page.</p><div class="epv2-actions"><button class="epv2-primary" data-epv2-enquire>Ask about this service →</button><button class="epv2-secondary" data-epv2-back>← Back</button></div></div>`;d.body.appendChild(page);page.scrollTop=0;page.querySelector('[data-epv2-back]').onclick=()=>page.remove();page.querySelector('[data-epv2-enquire]').onclick=()=>{page.remove();contact(team,'I would like more information about '+title+'.')};
+ }
+ function ensureAdvice(){
+  const stage=d.querySelector('#stages')||d.querySelector('#stageRow');if(stage&&!d.querySelector('#epv2-stage')){const a=d.createElement('div');a.id='epv2-stage';a.className='epv2-advice';a.innerHTML='Choose a stage and the most relevant 11+ routes will be explained here immediately.';stage.insertAdjacentElement('afterend',a)}
+  const sw=d.querySelector('#assessChoice')||d.querySelector('#assessmentSwitch');if(sw&&!d.querySelector('#epv2-assess')){const a=d.createElement('div');a.id='epv2-assess';a.className='epv2-advice';a.innerHTML='Choose an assessment style and the difference will be shown here immediately.';sw.insertAdjacentElement('afterend',a)}
+ }
+ ensureAdvice();new MutationObserver(ensureAdvice).observe(d.body,{childList:true,subtree:true});
+ d.addEventListener('click',e=>{
+  const b=e.target.closest('button,a');if(!b)return;
+  const t=text(b),k=keyOf(b);
+  if(b.id==='findTeam'||b.matches('[data-scroll="smart"]')){e.preventDefault();e.stopImmediatePropagation();say('Opening the Education Plus finder');const smart=d.querySelector('#smart');if(smart){smart.scrollIntoView({behavior:'auto',block:'start'});setTimeout(()=>smart.querySelector('button')?.focus(),0)}return}
+  if(b.dataset.go){e.preventDefault();e.stopImmediatePropagation();const map={home:'#home',tuition:'#tuition',eleven:'#eleven',elevenplus:'#elevenplus',assess:'#assess',assessments:'#assessments',contact:'#contact',about:'#about'};nav(map[b.dataset.go]||('#'+b.dataset.go),t||'Education Plus');return}
+  if((b.dataset.team||b.dataset.contactTeam)&&/enquire|contact|ask|guidance|help/i.test(t)){e.preventDefault();e.stopImmediatePropagation();contact(b.dataset.team||b.dataset.contactTeam,b.dataset.msg||b.dataset.message||'');return}
+  if(b.closest('.division,.division-card')&&/explore|enter/i.test(t)){
+   if(k==='tuition'){e.preventDefault();e.stopImmediatePropagation();nav('#tuition','Education Plus Tuition');return}
+   if(k){e.preventDefault();e.stopImmediatePropagation();coming(titles[k]||'Education Plus',teams[k]||'General Enquiries',k,'This specialist Education Plus area is being developed further.');return}
+  }
+  if(b.closest('.service,.service-card')&&/explore|learn/i.test(t)){
+   const card=b.closest('.service,.service-card'),name=card?.querySelector('h3')?.textContent?.trim()||'Tuition service';e.preventDefault();e.stopImmediatePropagation();if(/11 plus/i.test(name)){nav('#eleven','11 Plus')}else coming(name,'Tuition','tuition','This Education Plus Tuition service page is currently being developed.');return
+  }
+  if(b.closest('.route,.route-card')&&/explore|learn/i.test(t)){
+   const card=b.closest('.route,.route-card'),name=card?.querySelector('h3')?.textContent?.trim()||'11+ route';e.preventDefault();e.stopImmediatePropagation();if(/assessment/i.test(name)){nav('#assess','11+ Assessments')}else coming(name,'Tuition','tuition','This route is part of the connected Education Plus 11+ pathway and its full page is currently being developed.');return
+  }
+  if(b.closest('.assess,.assessment-card')&&/learn|explore/i.test(t)){
+   const card=b.closest('.assess,.assessment-card'),code=card?.querySelector('.big')?.textContent?.trim()||'',name='EPT 11+ Assessment '+code;e.preventDefault();e.stopImmediatePropagation();coming(name,'Tuition','tuition','You have reached the correct assessment route. The full product page and launch flow are currently being developed.');return
+  }
+  if(b.dataset.stage){setTimeout(()=>{ensureAdvice();const a=d.querySelector('#epv2-stage');if(!a)return;const m={starting:'<b>Just starting:</b> 11+ Tuition, Learning Journey, Vocabulary/VR/NVR and Admissions & Scores are strong starting points.',start:'<b>Just starting:</b> 11+ Tuition, Learning Journey, Vocabulary/VR/NVR and Admissions & Scores are strong starting points.',preparing:'<b>Already preparing:</b> tuition, assessments, intensive preparation and reasoning routes become especially relevant.',prep:'<b>Already preparing:</b> tuition, assessments, intensive preparation and reasoning routes become especially relevant.',checking:'<b>Progress check:</b> Full or Part Assessments can help identify what should happen next.',check:'<b>Progress check:</b> Full or Part Assessments can help identify what should happen next.',finishing:'<b>Near the test:</b> Final Stretch, Intensive preparation and admissions context come forward.',finish:'<b>Near the test:</b> Final Stretch, Intensive preparation and admissions context come forward.'};a.innerHTML=m[b.dataset.stage]||'The 11+ guidance has been updated.';say('11+ guidance updated immediately')},0);return}
+  if(b.dataset.type&&b.closest('#assessChoice')){setTimeout(()=>assessmentAdvice(b.dataset.type),0);return}
+  if(b.dataset.assess){setTimeout(()=>assessmentAdvice(b.dataset.assess),0);return}
+ },true);
+ function assessmentAdvice(type){ensureAdvice();const a=d.querySelector('#epv2-assess');if(!a)return;a.innerHTML=type==='full'?'<b>Full assessment:</b> F1 and F2 provide the broader mock-style experience and diagnostic evidence.':type==='part'?'<b>Part assessment:</b> P1 and P2 provide a shorter progress check and focused evidence.':'<b>All assessments:</b> F1, F2, P1 and P2 remain visible.';say('Assessment guidance updated immediately')}
+ w.addEventListener('hashchange',()=>{top();setTimeout(top,0);ensureAdvice()});
+ loader.style.display='none';top();
+}
+frame.addEventListener('load',()=>{try{inject()}catch(e){loader.textContent='Education Plus preview could not be initialized'}});
+})();
+</script>
+</body>
+</html>
