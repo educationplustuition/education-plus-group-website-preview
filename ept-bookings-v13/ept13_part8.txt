@@ -1,0 +1,169 @@
+d like to enquire about the ${chosen} tuition appointment.\n\nName: ${name}\nContact: ${contact}`;if(msg)body+=`\nMessage: ${msg}`;body+=`\n\nI understand that submitting an enquiry does not reserve the appointment until Education Plus Tuition confirms it.\n\nThank you.`;location.href='mailto:educationplustuition@gmail.com?subject='+encodeURIComponent('Tuition enquiry: '+chosen)+'&body='+encodeURIComponent(body)};
+// direct hash opening for QA / sharing
+const initial=(location.hash||'#availability').slice(1);if(titles[initial]&&initial!=='availability'){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===initial));document.getElementById('pageTitle').textContent=titles[initial]}
+</script>
+
+<script>
+(function(){
+  const dayNames=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const nextEl=document.getElementById('nextAvailable');
+  const updated=document.querySelector('.updated');
+
+  function startMinutes(label){
+    const clean=label.trim().toLowerCase();
+    const first=clean.split('–')[0].trim();
+    let hour=parseInt(first,10);
+    const isPm=clean.includes('pm');
+    const isAm=clean.includes('am') || clean.includes('noon');
+    if(isPm && hour<12) hour+=12;
+    if(isAm && hour===12) hour=0;
+    return hour*60;
+  }
+  function nextRealAvailability(now=new Date()){
+    const today=now.getDay(), mins=now.getHours()*60+now.getMinutes();
+    for(let offset=0;offset<8;offset++){
+      const idx=(today+offset)%7, day=dayNames[idx], rows=(typeof timetable!=='undefined' && timetable[day])||null;
+      if(!rows) continue;
+      for(const row of rows){
+        if(row[1]!=='available') continue;
+        const sm=startMinutes(row[0]);
+        if(offset===0 && sm<=mins) continue;
+        return {day,time:row[0],offset};
+      }
+    }
+    return null;
+  }
+  const nxt=nextRealAvailability();
+  if(nxt){
+    nextEl.textContent=`Next available: ${nxt.day} ${nxt.time}`;
+    // Make the first view intelligent: show the genuinely next available day.
+    if(typeof renderDay==='function') renderDay(nxt.day);
+  } else if(nextEl){ nextEl.textContent='Please enquire for upcoming availability'; }
+  const now=new Date();
+  document.querySelectorAll('.dayTab').forEach(b=>b.classList.toggle('today',b.dataset.day===dayNames[now.getDay()]));
+  if(updated){
+    const fmt=new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'long',year:'numeric'}).format(now);
+    updated.innerHTML='Updated<br>'+fmt;
+  }
+
+  // Add a clear reading-mode button to each text-rich page.
+  const readable=['about','progress','fees','terms','contact'];
+  readable.forEach(name=>{
+    const view=document.querySelector(`.view[data-view="${name}"]`);
+    if(!view || view.querySelector('.readerLaunch')) return;
+    const hero=view.querySelector('.pageHero');
+    if(!hero) return;
+    const btn=document.createElement('button');
+    btn.type='button'; btn.className='readerLaunch'; btn.dataset.reader=name;
+    btn.innerHTML='<span class="aa">Aa</span><span>Larger text</span>';
+    hero.insertAdjacentElement('afterend',btn);
+  });
+
+  const overlay=document.getElementById('readerOverlay'), body=document.getElementById('readerBody'), title=document.getElementById('readerTitle');
+  let readerSize=22;
+  function esc(t){return String(t||'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[m]));}
+  function readerMarkup(view){
+    let out='';
+    const hero=view.querySelector('.pageHero');
+    if(hero){
+      const k=hero.querySelector('.kicker'),h=hero.querySelector('h1'),p=hero.querySelector('p'),q=hero.querySelector('.quote');
+      if(k) out+=`<div class="readerKicker">${esc(k.textContent)}</div>`;
+      if(h) out+=`<h1>${esc(h.textContent)}</h1>`;
+      if(p) out+=`<p>${esc(p.textContent)}</p>`;
+      if(q) out+=`<div class="readerQuote">${esc(q.textContent)}</div>`;
+    }
+    const pills=[...view.querySelectorAll('.pill')];
+    if(pills.length) out+='<div class="readerPills">'+pills.map(p=>`<span>${esc(p.textContent)}</span>`).join('')+'</div>';
+    view.querySelectorAll('.chapter').forEach(ch=>{
+      const h=ch.querySelector('strong'),p=ch.querySelector('p');
+      if(h) out+=`<h2>${esc(h.textContent)}</h2>`;
+      if(p) out+=`<p>${esc(p.textContent)}</p>`;
+    });
+    view.querySelectorAll('.pathStep').forEach(st=>{
+      const h=st.querySelector('strong'),p=st.querySelector('p');
+      if(h) out+=`<h2>${esc(h.textContent)}</h2>`;
+      if(p) out+=`<p>${esc(p.textContent)}</p>`;
+    });
+    view.querySelectorAll('.details').forEach(d=>{
+      const h=d.querySelector('button'),b=d.querySelector('.body');
+      if(h) out+=`<h2>${esc(h.textContent)}</h2>`;
+      if(b) out+=`<p>${b.innerHTML}</p>`;
+    });
+    // Contact page has linked chapters; preserve destinations in reading view.
+    if(view.dataset.view==='contact'){
+      out='';
+      if(hero){const k=hero.querySelector('.kicker'),h=hero.querySelector('h1'),p=hero.querySelector('p');if(k)out+=`<div class="readerKicker">${esc(k.textContent)}</div>`;if(h)out+=`<h1>${esc(h.textContent)}</h1>`;if(p)out+=`<p>${esc(p.textContent)}</p>`;}
+      view.querySelectorAll('a.chapter').forEach(a=>{const h=a.querySelector('strong'),p=a.querySelector('p');if(h)out+=`<h2>${esc(h.textContent)}</h2>`;if(p)out+=`<p><a href="${a.href}" target="_blank" rel="noopener">${esc(p.textContent)}</a></p>`;});
+    }
+    return out || '<p>There is no additional text on this page.</p>';
+  }
+  function openReader(name){
+    const view=document.querySelector(`.view[data-view="${name}"]`); if(!view)return;
+    title.textContent=(view.querySelector('.pageHero h1')||{}).textContent||'Reading view';
+    body.innerHTML=readerMarkup(view); readerSize=22; body.style.setProperty('--reader-size',readerSize+'px'); body.scrollTop=0;
+    overlay.classList.add('open'); overlay.setAttribute('aria-hidden','false'); document.body.classList.add('reader-open');
+    setTimeout(()=>document.getElementById('readerClose').focus(),30);
+  }
+  function closeReader(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');document.body.classList.remove('reader-open');}
+  document.querySelectorAll('.readerLaunch').forEach(b=>b.onclick=()=>openReader(b.dataset.reader));
+  document.getElementById('readerClose').onclick=closeReader;
+  document.getElementById('readerMinus').onclick=()=>{readerSize=Math.max(18,readerSize-2);body.style.setProperty('--reader-size',readerSize+'px')};
+  document.getElementById('readerPlus').onclick=()=>{readerSize=Math.min(34,readerSize+2);body.style.setProperty('--reader-size',readerSize+'px')};
+  overlay.addEventListener('keydown',e=>{if(e.key==='Escape')closeReader()});
+
+  // Replace the older navigation transition with a brief 'thinking roundel' moment.
+  const menuEl=document.getElementById('menu'), veilEl=document.getElementById('veil');
+  const pageTitles={availability:'Current availability',about:'About Education Plus Tuition',progress:'EP Progress',fees:'Fees',terms:'Information & Terms',contact:'Contact & Getting Here'};
+  function smartGo(viewName){
+    const active=document.querySelector('.view.active');
+    if(active && active.dataset.view===viewName){menuEl.classList.remove('open');return;}
+    menuEl.classList.remove('open');
+    veilEl.classList.remove('run'); void veilEl.offsetWidth; veilEl.classList.add('run');
+    setTimeout(()=>{
+      document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.dataset.view===viewName));
+      const pv=document.querySelector(`.view[data-view="${viewName}"]`); if(pv) pv.scrollTop=0;
+      document.getElementById('pageTitle').textContent=pageTitles[viewName]||'';
+      history.replaceState(null,'','#'+viewName);
+    },860);
+    setTimeout(()=>veilEl.classList.remove('run'),1040);
+  }
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>smartGo(b.dataset.go));
+})();
+</script>
+
+<style>
+/* v10 QA refinements: no ghosted page cross-fade; wrapping metadata */
+.view{transition:none!important;transform:none!important}
+.pillRow{flex-wrap:wrap!important;overflow:visible!important}
+.pill{white-space:normal!important;text-align:center}
+@media(max-width:430px){.pillRow{display:flex!important;gap:6px!important}.pill{flex:1 1 auto!important;min-width:0!important}}
+</style>
+
+<style>
+/* v11 transition visibility fix: opaque intelligent 'thinking' interstitial */
+.veil.run{opacity:1!important;visibility:visible!important;animation:none!important}
+.veil.run .veilLine{animation:thinkRing .56s ease both!important}
+.veil.run img{animation:roundelThink .56s cubic-bezier(.18,.76,.24,1) both!important}
+</style>
+
+<style>
+/* v12: make the roundel visibly act as the premium thinking/loading cog */
+.veil.run img{opacity:1!important;width:80px!important;height:80px!important;animation:roundelCog .56s cubic-bezier(.28,.72,.26,1) both!important;filter:drop-shadow(0 0 18px rgba(255,238,168,.36)) drop-shadow(0 8px 16px rgba(0,0,0,.28))!important}
+@keyframes roundelCog{0%{transform:rotate(-28deg) scale(.9)}100%{transform:rotate(332deg) scale(1.02)}}
+</style>
+
+<style>
+/* v13: restored official roundel in masthead + deliberate thinking transition */
+.brandCore{display:flex!important;align-items:center!important;justify-content:center!important;gap:12px!important;padding:16px 24px 10px!important}
+.headerRoundel{width:58px!important;height:58px!important;object-fit:contain!important;flex:0 0 58px!important;filter:drop-shadow(0 5px 12px rgba(0,0,0,.16))}
+.wordmark{width:min(calc(100% - 76px),258px)!important;max-height:86px!important;object-fit:contain!important}
+@media(min-width:700px){.brandCore{gap:18px!important}.headerRoundel{width:76px!important;height:76px!important;flex-basis:76px!important}.wordmark{width:min(calc(100% - 100px),390px)!important}}
+@media(max-width:350px){.brandCore{gap:8px!important;padding-left:14px!important;padding-right:14px!important}.headerRoundel{width:50px!important;height:50px!important;flex-basis:50px!important}.wordmark{width:min(calc(100% - 62px),240px)!important}}
+.veil.run{opacity:1!important;visibility:visible!important;animation:veilHoldV13 1.04s ease both!important}
+.veil.run img{opacity:1!important;width:82px!important;height:82px!important;animation:roundelThinkV13 .86s cubic-bezier(.22,.68,.22,1) both!important;filter:drop-shadow(0 0 20px rgba(255,238,168,.38)) drop-shadow(0 8px 16px rgba(0,0,0,.28))!important}
+.veil.run .veilLine{animation:thinkRailV13 .78s ease-in-out both!important}
+@keyframes roundelThinkV13{0%{transform:rotate(0deg) scale(.92);opacity:0}8%{opacity:1}72%{transform:rotate(720deg) scale(1.03);opacity:1}100%{transform:rotate(720deg) scale(1.03);opacity:1}}
+@keyframes thinkRailV13{0%{left:-28%;opacity:0}12%{opacity:1}78%{left:105%;opacity:1}100%{left:105%;opacity:0}}
+@keyframes veilHoldV13{0%{opacity:0}10%{opacity:1}84%{opacity:1}100%{opacity:0}}
+</style>
+</body></html>
