@@ -25,7 +25,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat streamaudit-v1-2/chunk_00.b64               streamaudit-v1-2/chunk_01.b64               streamaudit-v1-2/chunk_02.b64               streamaudit-v1-2/chunk_03.b64               streamaudit-v1-2/chunk_04.b64               streamaudit-v1-2/chunk_05.b64               streamaudit-v1-2/chunk_06.b64               streamaudit-v1-2/chunk_07.b64 > source.b64
+          cat streamaudit-v1-2/chunk_00.b64               streamaudit-v1-2/chunk_01a.b64               streamaudit-v1-2/chunk_01b.b64               streamaudit-v1-2/chunk_02.b64               streamaudit-v1-2/chunk_03.b64               streamaudit-v1-2/chunk_04.b64               streamaudit-v1-2/chunk_05.b64               streamaudit-v1-2/chunk_06.b64               streamaudit-v1-2/chunk_07.b64 > source.b64
+          test "$(wc -c < source.b64)" -eq 60868
           base64 -d source.b64 > StreamAudit-Training-1.2.0-universal-source.zip
           echo "caf73da7181cdbb74d7128c654292ecf0e32ee697575dd6e62774046106ad016  StreamAudit-Training-1.2.0-universal-source.zip" | sha256sum -c -
           unzip -q StreamAudit-Training-1.2.0-universal-source.zip
