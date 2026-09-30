@@ -8,6 +8,9 @@ on:
       - '.github/workflows/killer-ds-android.yml'
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -31,7 +34,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl --fail --location --silent --show-error 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-e328-8210-b5ad-1a229f8e6331/raw?se=2026-09-30T23%3A38%3A53Z&sp=r&sv=2026-02-06&sr=b&scid=67430e4c-3bed-5f81-bbb6-48e3e5416673&skoid=c30e7ce7-1f51-4051-a377-288cdba21c02&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-30T21%3A33%3A11Z&ske=2026-10-01T21%3A33%3A11Z&sks=b&skv=2026-02-06&sig=bAr1GGArS3prAMKasyvTauJKD/yw%2BjSnXQFQA9n6bXE%3D' --output killer-ds-source.zip
+          curl --fail --location --silent --show-error 'https://sdmntprukwest.oaiusercontent.com/files/00000000-3638-8243-b07f-093b5f6501d9/raw?se=2026-09-30T23%3A41%3A59Z&sp=r&sv=2026-02-06&sr=b&scid=6689efa8-e239-51d0-86b6-1e57e3279039&skoid=c30e7ce7-1f51-4051-a377-288cdba21c02&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-30T21%3A23%3A34Z&ske=2026-10-01T21%3A23%3A34Z&sks=b&skv=2026-02-06&sig=m%2BvscmEdZEYITcdON5lOxXVb2PfwZhJ2mo8%2B2fESk4Q%3D' --output killer-ds-source.zip
           echo "9bbfd3e4b7c811bf8a613050ad38e645dd289598611fb9f59615efecce68ee99  killer-ds-source.zip" | sha256sum -c -
           rm -rf killer-ds-android
           mkdir -p killer-ds-android
@@ -53,6 +56,23 @@ jobs:
           unzip -t "$APK" >/dev/null
           cp "$APK" KILLER-DS-Android-1.2.1.apk
           sha256sum KILLER-DS-Android-1.2.1.apk | tee KILLER-DS-Android-1.2.1.sha256
+
+      - name: Publish verified APK on isolated branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p killer-ds-release
+          cp KILLER-DS-Android-1.2.1.apk killer-ds-release/
+          cp KILLER-DS-Android-1.2.1.sha256 killer-ds-release/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f killer-ds-release/KILLER-DS-Android-1.2.1.apk killer-ds-release/KILLER-DS-Android-1.2.1.sha256
+          if git diff --cached --quiet; then
+            echo "Verified release files already current"
+          else
+            git commit -m "release: KILLER DS Android 1.2.1"
+            git push origin HEAD:killer-ds-build
+          fi
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
