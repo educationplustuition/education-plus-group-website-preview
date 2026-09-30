@@ -1,0 +1,183 @@
+name: Build KILLER DS Android APK
+
+on:
+  push:
+    branches:
+      - killer-ds-build
+    paths:
+      - '.github/workflows/killer-ds-android.yml'
+      - 'killer-ds-build/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout isolated build branch
+        uses: actions/checkout@v4
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle 8.11.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.11.1'
+
+      - name: Reconstruct recovered Android source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat killer-ds-build/chunk_*.b64 > killer-ds-source.b64
+          base64 -d killer-ds-source.b64 > killer-ds-source.zip
+          echo "901f79a42ae0ca80d41c240ed3b4ebc31572a35004fa06c5a250bc5080c6aa2a  killer-ds-source.zip" | sha256sum -c -
+          rm -rf killer-ds-android
+          mkdir -p killer-ds-android
+          unzip -q killer-ds-source.zip -d killer-ds-android
+          test -f killer-ds-android/app/build.gradle
+          test -f killer-ds-android/app/src/main/AndroidManifest.xml
+
+      - name: Apply KILLER DS 1.2.1 provider-first update
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+
+          root=Path('killer-ds-android')
+
+          for p in [root/'app/src/main/AndroidManifest.xml', root/'app/src/main/res/values/strings.xml']:
+              s=p.read_text()
+              s=s.replace('StreamAudit Training','KILLER DS')
+              p.write_text(s)
+
+          p=root/'app/build.gradle'
+          s=p.read_text()
+          s=re.sub(r'versionCode\s+\d+', 'versionCode 12', s)
+          s=re.sub(r"versionName\s+'[^']+'", "versionName '1.2.1'", s)
+          p.write_text(s)
+
+          p=root/'app/src/main/java/com/streamaudit/training/MainActivity.java'
+          p.write_text("""package com.streamaudit.training;
+
+          import android.app.Activity;
+          import android.content.Intent;
+          import android.os.Bundle;
+          import android.widget.TextView;
+          import android.widget.Toast;
+
+          public class MainActivity extends Activity {
+              private TextView status;
+              @Override public void onCreate(Bundle b) {
+                  super.onCreate(b);
+                  setContentView(R.layout.activity_main);
+                  status=findViewById(R.id.status);
+                  findViewById(R.id.live).setOnClickListener(v->openCatalog("live"));
+                  findViewById(R.id.movies).setOnClickListener(v->openCatalog("movies"));
+                  findViewById(R.id.series).setOnClickListener(v->openCatalog("series"));
+                  findViewById(R.id.sports).setOnClickListener(v->openCatalog("sports"));
+                  findViewById(R.id.catchup).setOnClickListener(v->openProviderOnly(CatchUpActivity.class));
+                  findViewById(R.id.search).setOnClickListener(v->openProviderOnly(SearchActivity.class));
+                  findViewById(R.id.favorites).setOnClickListener(v->openProviderOnly(FavoritesActivity.class));
+                  findViewById(R.id.multiview).setOnClickListener(v->openProviderOnly(MultiViewActivity.class));
+                  findViewById(R.id.settings).setOnClickListener(v->startActivity(new Intent(this,SettingsActivity.class)));
+                  findViewById(R.id.diagnostics).setOnClickListener(v->startActivity(new Intent(this,DiagnosticsActivity.class)));
+              }
+              @Override protected void onResume(){
+                  super.onResume();
+                  ProviderConfig c=ProviderConfig.load(this);
+                  status.setText(c.isConfigured()
+                      ? "Authorised provider configured • live catalogue mode"
+                      : "Connect an authorised provider in Settings to load Live TV, Movies, TV Shows and Sports");
+              }
+              private boolean ensureProvider(){
+                  if(ProviderConfig.load(this).isConfigured()) return true;
+                  Toast.makeText(this,"Connect an authorised provider first.",Toast.LENGTH_LONG).show();
+                  startActivity(new Intent(this,SettingsActivity.class));
+                  return false;
+              }
+              private void openCatalog(String mode){
+                  if(!ensureProvider()) return;
+                  startActivity(new Intent(this,CatalogActivity.class).putExtra("mode",mode));
+              }
+              private void openProviderOnly(Class<?> cls){
+                  if(!ensureProvider()) return;
+                  startActivity(new Intent(this,cls));
+              }
+          }
+          """)
+
+          p=root/'app/src/main/java/com/streamaudit/training/CatalogActivity.java'
+          s=p.read_text()
+          s=s.replace('demoMode = !config.isConfigured();','demoMode = false;')
+          s=s.replace('if (demoMode) {\n            showArray(DemoLibrary.categories(mode), true, "Training categories • no account required");\n            return;\n        }',
+                      'if (!config.isConfigured()) { message.setText("Connect an authorised provider in Settings first."); return; }')
+          s=s.replace('if (demoMode) {\n            showArray(DemoLibrary.items(this, mode, category), false, "Training catalogue • hold for favourite");\n            return;\n        }',
+                      'if (!config.isConfigured()) { message.setText("Connect an authorised provider in Settings first."); return; }')
+          p.write_text(s)
+
+          p=root/'app/src/main/java/com/streamaudit/training/SearchActivity.java'
+          s=p.read_text()
+          s=s.replace('demo = !config.isConfigured();','demo = false;')
+          s=s.replace('if (demo) message.setText("Search the built-in films, TV shows and sports catalogue");',
+                      'if (!config.isConfigured()) message.setText("Connect an authorised provider in Settings first.");')
+          p.write_text(s)
+
+          p=root/'app/src/main/java/com/streamaudit/training/SeriesActivity.java'
+          s=p.read_text().replace('demo = getIntent().getBooleanExtra("demo", !config.isConfigured());','demo = false;')
+          p.write_text(s)
+
+          for p in [root/'app/src/main/res/layout/activity_main.xml', root/'app/src/main/res/layout/activity_settings.xml']:
+              s=p.read_text()
+              s=s.replace('StreamAudit Training','KILLER DS')
+              s=s.replace('Account-free training catalogue active','Connect an authorised provider in Settings')
+              s=s.replace('Built-in training media works without an account • optional authorised provider support',
+                          'Live TV, Movies, TV Shows and Sports are loaded from your authorised provider')
+              s=s.replace('Films, TV shows and sports simulations are included in the APK. No account is needed for training mode.',
+                          'Live TV, Movies, TV Shows, Sports and catch-up are loaded from your authorised provider. No provider credentials are built into the app.')
+              s=s.replace('Provider configuration','KILLER DS • Provider connection')
+              s=s.replace('Use credentials for a service you are authorised to access. The app opens directly to Home; this page only supplies the provider API.',
+                          "Enter the server address, username and password for a TV service you are authorised to access. KILLER DS loads that provider's Live TV, Movies, TV Shows, Sports and catch-up catalogue at runtime.")
+              p.write_text(s)
+
+          p=root/'app/src/main/java/com/streamaudit/training/DiagnosticsActivity.java'
+          if p.exists():
+              s=p.read_text()
+              s=s.replace('StreamAudit Training 1.0.0','KILLER DS 1.2.1')
+              s=s.replace('StreamAudit Training 1.1.0','KILLER DS 1.2.1')
+              p.write_text(s)
+
+          main=(root/'app/src/main/java/com/streamaudit/training/MainActivity.java').read_text()
+          assert 'ensureProvider()' in main
+          assert 'Connect an authorised provider' in main
+          PY
+
+      - name: Build debug APK
+        working-directory: killer-ds-android
+        shell: bash
+        run: gradle :app:assembleDebug --stacktrace
+
+      - name: Verify and name APK
+        shell: bash
+        run: |
+          set -euo pipefail
+          APK=killer-ds-android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          unzip -t "$APK" >/dev/null
+          cp "$APK" KILLER-DS-Android-1.2.1.apk
+          sha256sum KILLER-DS-Android-1.2.1.apk | tee KILLER-DS-Android-1.2.1.sha256
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: KILLER-DS-Android-1.2.1
+          path: |
+            KILLER-DS-Android-1.2.1.apk
+            KILLER-DS-Android-1.2.1.sha256
+          if-no-files-found: error
+          retention-days: 30
