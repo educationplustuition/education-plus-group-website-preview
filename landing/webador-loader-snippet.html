@@ -1,0 +1,36 @@
+<script>
+(function () {
+  const isHome = location.pathname === "/" || /\/preview\/page\/37648121$/.test(location.pathname);
+  if (!isHome) return;
+
+  const LIVE_URL = "https://education-plus-landing.vercel.app/";
+  const FRAME_ID = "education-plus-live";
+
+  document.documentElement.classList.add("education-plus-live-home");
+
+  const style = document.createElement("style");
+  style.textContent = [
+    "html.education-plus-live-home,html.education-plus-live-home body{margin:0!important;padding:0!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#07192f!important}",
+    "html.education-plus-live-home body>*:not(#"+FRAME_ID+"){display:none!important}",
+    "#"+FRAME_ID+"{display:block!important;position:fixed!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;margin:0!important;padding:0!important;max-width:none!important;z-index:2147483647!important;background:#07192f!important}"
+  ].join("");
+  document.head.appendChild(style);
+
+  function mount() {
+    if (document.getElementById(FRAME_ID)) return;
+    const frame = document.createElement("iframe");
+    frame.id = FRAME_ID;
+    frame.title = "Education Plus";
+    frame.src = LIVE_URL;
+    frame.loading = "eager";
+    frame.referrerPolicy = "strict-origin-when-cross-origin";
+    document.body.appendChild(frame);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", mount, { once: true });
+  } else {
+    mount();
+  }
+})();
+</script>
