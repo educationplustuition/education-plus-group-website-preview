@@ -17,19 +17,16 @@
       "destination": "/v47.html"
     },
     {
+      "source": "/tuition",
+      "destination": "/v47.html"
+    },
+    {
       "source": "/tuition/11",
       "destination": "/tuition-11-v48.html"
     },
     {
       "source": "/legacy",
       "destination": "/legacy.html"
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/tuition",
-      "destination": "https://bookings.educationplusgroup.co.uk/",
-      "permanent": false
     }
   ]
 }
