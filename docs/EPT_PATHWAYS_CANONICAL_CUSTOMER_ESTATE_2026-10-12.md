@@ -239,3 +239,26 @@ Before release, review:
 - real rendered output, not source code alone.
 
 A passing build is not proof of a good customer experience.
+
+
+## 14. Hosting and deployment policy
+
+The permanent public identity is the Education Plus domain estate, including `educationplusgroup.co.uk` and approved subdomains.
+
+Hosting/deployment providers are infrastructure only and must not dictate the customer-facing architecture.
+
+**Default rule: use a suitable free hosting/deployment option first.**
+
+Vercel must be used only when:
+1. there is no suitable free alternative for the required workload; or
+2. Vercel provides a materially important capability that available free alternatives cannot provide.
+
+Do not create additional Vercel projects merely for convenience, previews or routine static hosting where a suitable free option exists.
+
+Where a service is migrated away from Vercel, preserve the existing Education Plus public domain/subdomain so customer links do not change.
+
+Before introducing any paid hosting dependency, document:
+- why the free alternatives are insufficient;
+- what capability requires the paid service;
+- the expected ongoing cost/risk;
+- the migration/exit route.
